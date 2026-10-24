@@ -1,0 +1,21 @@
+{
+  "name": "Python GCP Compute Engine Dev",
+  "dockerComposeFile": ["../compose.yml"],
+  "service": "python_service",
+  "workspaceFolder": "/workspace",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "ms-toolsai.jupyter",
+        "ms-azuretools.vscode-docker"
+      ],
+      "settings": {
+        "python.defaultInterpreterPath": "/usr/local/bin/python",
+        "jupyter.notebookFileRoot": "/workspace"
+      }
+    }
+  },
+  "remoteUser": "root"
+}

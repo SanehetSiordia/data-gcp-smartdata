@@ -1,0 +1,42 @@
+# Git and IDE
+.git
+.gitignore
+
+# IDEs and OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Environments
+.env
+.env*
+.envrc
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.python-version
+*.ipynb
+.pytest_cache/
+
+# Logs & Monitoring
+logs/
+*.log
+
+# Build & OS Artifacts
+dist/
+build/
+.DS_Store
+.dockerignore
+Dockerfile
+docker-compose*
+compose*
+README.md
+.devcontainer/
+materiales/
