@@ -1,6 +1,9 @@
 -include .env
 export
 
+# Evita que MSYS2 / Git Bash en Windows altere las rutas absolutas de Linux (/workspace)
+export MSYS_NO_PATHCONV=1
+
 COMPOSE_FILE ?= compose.yml
 ENV ?= .env
 
@@ -12,9 +15,9 @@ GCP_SA_NAME ?= $(GCP_SA_NAME)
 GCP_SA_EMAIL ?= $(GCP_SA_EMAIL)
 GCP_KEY_FILE ?= $(GCP_KEY_FILE)
 
-.PHONY: make-all create-gcp-docker create-python-docker setup-sa create-firewall-gcp
+.PHONY: up create-gcp-docker create-python-docker setup-sa create-firewall-gcp
 
-make-all: create-gcp-docker create-python-docker setup-sa create-firewall-gcp
+up: create-gcp-docker create-python-docker setup-sa create-firewall-gcp
 
 create-gcp-docker:
 	@echo "=== Verificando estado del servicio $(SERVICE_GCP) ==="
@@ -39,13 +42,17 @@ setup-sa: create-gcp-docker
 	@if [ -f "./credentials/service_account_key.json" ]; then \
 		echo "=== La llave de Service Account ya existe en ./credentials/. Omitiendo login inicial. ==="; \
 	else \
-		echo "=== Iniciando sesion de usuario para aprovisionamiento inicial ==="; \
-		docker exec -it $(CONTAINER_GCP) gcloud auth login --no-launch-browser; \
+		echo "=== Verificando sesion en gcloud CLI ==="; \
+		if ! docker exec $(CONTAINER_GCP) gcloud auth list --filter=status:ACTIVE --format="value(account)" | grep -q "@"; then \
+			docker exec -it $(CONTAINER_GCP) gcloud auth login --no-launch-browser; \
+		fi; \
 		docker exec $(CONTAINER_GCP) gcloud config set project $(GCP_PROJECT_ID); \
+		echo "=== Habilitando APIs requeridas del proyecto ==="; \
+		docker exec $(CONTAINER_GCP) gcloud services enable cloudresourcemanager.googleapis.com compute.googleapis.com; \
 		echo "=== Creando Service Account en GCP ==="; \
-		-docker exec $(CONTAINER_GCP) gcloud iam service-accounts create $(GCP_SA_NAME) \
+		docker exec $(CONTAINER_GCP) gcloud iam service-accounts create $(GCP_SA_NAME) \
 			--project=$(GCP_PROJECT_ID) \
-			--display-name="Compute and Firewall Provisioner"; \
+			--display-name="Compute and Firewall Provisioner" || true; \
 		echo "=== Asignando roles IAM necesarios ==="; \
 		docker exec $(CONTAINER_GCP) gcloud projects add-iam-policy-binding $(GCP_PROJECT_ID) \
 			--member="serviceAccount:$(GCP_SA_EMAIL)" \
@@ -57,10 +64,12 @@ setup-sa: create-gcp-docker
 			--member="serviceAccount:$(GCP_SA_EMAIL)" \
 			--role="roles/iam.serviceAccountUser"; \
 		echo "=== Exportando llave JSON ==="; \
-		docker exec $(CONTAINER_GCP) gcloud iam service-accounts keys create $(GCP_KEY_FILE) \
+		MSYS_NO_PATHCONV=1 docker exec $(CONTAINER_GCP) gcloud iam service-accounts keys create credentials/service_account_key.json \
 			--iam-account=$(GCP_SA_EMAIL) \
 			--project=$(GCP_PROJECT_ID); \
-		echo "Llave generada exitosamente en $(GCP_KEY_FILE)"; \
+		echo "Esperando 10 segundos a que la llave se propague en Google IAM..."; \
+		sleep 10; \
+		echo "Llave generada exitosamente en credentials/service_account_key.json"; \
 	fi
 
 create-firewall-gcp: create-gcp-docker
