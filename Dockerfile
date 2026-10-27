@@ -21,6 +21,7 @@ COPY ./requirements.txt /tmp/requirements.txt
 RUN --mount=type=cache,target=/root/.cache/pip \
     pip install --upgrade pip && \
     pip install --prefer-binary -r /tmp/requirements.txt && \
+    python -m ipykernel install --name python3 --display-name "Python 3.13 (Docker)" && \
     rm /tmp/requirements.txt
 
 CMD ["tail", "-f", "/dev/null"]

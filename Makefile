@@ -15,7 +15,9 @@ GCP_SA_NAME ?= $(GCP_SA_NAME)
 GCP_SA_EMAIL ?= $(GCP_SA_EMAIL)
 GCP_KEY_FILE ?= $(GCP_KEY_FILE)
 
-.PHONY: up create-gcp-docker create-python-docker setup-sa create-firewall-gcp
+MY_IP ?= $(shell curl -4 -s https://ifconfig.me)
+
+.PHONY: up create-gcp-docker create-python-docker setup-sa create-firewall-gcp restrict-firewall-gcp down purge
 
 up: create-gcp-docker create-python-docker setup-sa create-firewall-gcp
 
@@ -88,3 +90,21 @@ create-firewall-gcp: create-gcp-docker
 			--rules=tcp:5432 \
 			--source-ranges=0.0.0.0/0 \
 			--target-tags=postgres-server
+			
+restrict-firewall-gcp: create-firewall-gcp
+	@if [ -z "$(MY_IP)" ]; then echo "No se pudo obtener la IP publica"; exit 1; fi
+	@echo "=== Restringiendo tcp:5432 a $(MY_IP)/32 ==="
+	docker exec $(CONTAINER_GCP) gcloud compute firewall-rules update allow-postgres-ingress \
+		--project=$(GCP_PROJECT_ID) \
+		--source-ranges=$(MY_IP)/32
+	@docker exec $(CONTAINER_GCP) gcloud compute firewall-rules describe allow-postgres-ingress \
+		--project=$(GCP_PROJECT_ID) --format="value(sourceRanges)"
+
+down:
+	docker compose -f $(COMPOSE_FILE) down
+	@echo "=== Entorno detenido ==="
+
+purge:
+	docker compose -f $(COMPOSE_FILE) down -v
+	docker builder prune -f
+	@echo "=== Entorno detenido, volumenes y caches purgados ==="

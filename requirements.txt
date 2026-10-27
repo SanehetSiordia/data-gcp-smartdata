@@ -1,4 +1,6 @@
 # Base & Dev
+ipykernel>=6.29.5
+jupyter_client>=8.6.0
 pydantic>=2.10.0
 python-dotenv>=1.0.1
 debugpy>=1.8.0
