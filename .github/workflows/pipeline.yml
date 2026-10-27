@@ -1,0 +1,3 @@
+# .github/workflows/pipeline.yml
+# CI/CD Pipeline GCP proyecto SmartData
+name: GCP Pipeline CI/CD

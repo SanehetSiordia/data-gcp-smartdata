@@ -1,0 +1,18 @@
+# Base & Dev
+ipykernel>=6.29.5
+jupyter_client>=8.6.0
+pydantic>=2.10.0
+python-dotenv>=1.0.1
+debugpy>=1.8.0
+streamlit>=1.40.0
+ipykernel>=6.29.0
+
+# Datos & DB
+pandas>=2.2.3
+psycopg2-binary>=2.9.10
+sqlalchemy>=2.0.36
+Faker>=33.0.0
+
+# GCP SDKs
+google-cloud-compute>=1.20.0
+google-api-core>=2.20.0

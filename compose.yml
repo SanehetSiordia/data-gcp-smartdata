@@ -1,0 +1,41 @@
+services:
+  python_service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: python_server
+    image: ${IMAGE_NAME_PYTHON}:${IMAGE_VERSION}
+    container_name: ${DOCKER_NAME_PYTHON}
+    env_file:
+      - .env
+    volumes:
+      - ./:/workspace:cached
+      - ./credentials:/root/.config/gcloud:ro
+    networks:
+      - gcp-smartdata-net
+    working_dir: /workspace
+    stdin_open: true
+    tty: true
+    command: tail -f /dev/null
+
+  gcp_service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: gcp_server
+    image: ${IMAGE_NAME_GCP}:${IMAGE_VERSION}
+    container_name: ${DOCKER_GCP_NAME}
+    env_file:
+      - .env
+    volumes:
+      - ./:/workspace:cached
+      - ./credentials:/root/.config/gcloud
+    networks:
+      - gcp-smartdata-net
+    working_dir: /workspace
+    command: tail -f /dev/null
+
+networks:
+  gcp-smartdata-net:
+    name: ${APP_NETWORK_NAME}
+    driver: bridge
