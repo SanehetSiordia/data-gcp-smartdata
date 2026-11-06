@@ -25,7 +25,7 @@ export BUCKET=<name of bucket> # Solo para MAC
 gsutil mb gs://ssm-consola-bucket-clase6
 
 
-gsutil retention set 10s gs://ssm-consola-bucket-clase6
+gsutil retention set 15s gs://ssm-consola-bucket-clase6
 gsutil retention get gs://ssm-consola-bucket-clase6
 gsutil cp gs://spls/gsp297/dummy_transactions gs://ssm-consola-bucket-clase6/
 gsutil ls -L gs://ssm-consola-bucket-clase6/dummy_transactions
