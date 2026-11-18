@@ -53,7 +53,7 @@ telnet 10.157.203.107 6379
 python3 --version
 pip3 --version
 sudo apt-get install python3-pip
-sudo apt install python3.11-venv
+sudo apt install python3.13-venv
 python3 -m venv venv_redis
 source venv_redis/bin/activate
 pip3 install redis
