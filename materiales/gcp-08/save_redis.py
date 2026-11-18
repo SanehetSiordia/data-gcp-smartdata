@@ -1,7 +1,7 @@
 import redis
 
 # Conéctate a tu instancia de Redis en Memorystore
-redis_host = '10.202.25.35'
+redis_host = '10.208.192.11'
 redis_port = 6379  # El puerto predeterminado para Redis
 
 try:
