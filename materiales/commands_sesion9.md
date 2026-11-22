@@ -54,17 +54,17 @@ done
 bq ls babynames
 bq rm -r babynames
 
-Laboratorio Bigtable 01
+# Laboratorio Bigtable 01
 echo project = `gcloud config get-value project` > ~/.cbtrc
-echo instance = sd-consola-bigtable-1 >> ~/.cbtrc
+echo instance = ssm-consola-bigtable-01 >> ~/.cbtrc
 cat ~/.cbtrc
 cbt createtable my-table
 cbt ls
-cbt createfamily my-table cf1
+cbt createfamily my-table datos
 cbt ls my-table
-cbt set my-table r1 cf1:c1=test-value
-cbt set my-table r2 cf1:c1=test-value2
-cbt set my-table r2 cf1:c1=test-value1
+cbt set my-table r1 datos:c1=test-value
+cbt set my-table r2 datos:c1=test-value2
+cbt set my-table r2 datos:c1=test-value1
 cbt deletetable my-table
 
 
