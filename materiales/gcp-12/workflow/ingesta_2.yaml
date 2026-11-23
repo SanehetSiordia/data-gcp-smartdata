@@ -1,0 +1,21 @@
+main:
+  steps:
+    - ingesta_campanias:
+        call: googleapis.cloudfunctions.v1.projects.locations.functions.call
+        args:
+            name: projects/western-trilogy-429606-h1/locations/us-central1/functions/sd-consola-function-workflow-01
+            body:
+                data: '{"source": "cmp"}'
+        next: ingesta_transacciones
+        
+    - ingesta_transacciones:
+        call: googleapis.cloudfunctions.v1.projects.locations.functions.call
+        args:
+            name: projects/western-trilogy-429606-h1/locations/us-central1/functions/sd-consola-function-workflow-01
+            body:
+                data: '{"source": "trx"}'
+        next: fin_ingesta
+
+    - fin_ingesta:
+        return: "Fin de la ingesta"
+

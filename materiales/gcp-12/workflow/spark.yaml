@@ -1,0 +1,23 @@
+main:
+  steps:
+    - ejecutar-job:
+        call: http.post
+        args:
+          url: "https://dataproc.googleapis.com/v1/projects/western-trilogy-429606-h1/regions/us-central1/jobs:submit"
+          headers:
+            Content-Type: application/json
+            Authorization: ${"Bearer " + access_token}
+          body: 
+            job:
+              placement:
+                clusterName: "ronny-cluster"
+              sparkJob:
+                args:
+                  - "1000"
+                mainClass: "org.apache.spark.examples.SparkPi"
+                jarFileUris:
+                  - "file:///usr/lib/spark/examples/jars/spark-examples.jar"
+        result: response
+
+    - print-job-id:
+        return: ${response.body.jobUuid}

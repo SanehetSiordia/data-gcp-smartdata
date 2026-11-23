@@ -1,0 +1,19 @@
+main:
+  steps:
+    - ejecutar-job:
+        call: http.post
+        args:
+          url: "https://dataproc.googleapis.com/v1/projects/kinetic-physics-305312/regions/us-central1/jobs:submit"
+          headers:
+            Content-Type: application/json
+            Authorization: ${"Bearer " + access_token}
+              placement:
+                clusterName: "sd-local-dataproc-01"
+              pysparkJob:
+                mainPythonFileUri: "gs://sd-gcolab-g20-dataproc/g20_pyspark.py"
+                jarFileUris:
+                  - "gs://sd-gcolab-g20-dataproc/spark-bigquery-with-dependencies_2.12-0.30.0.jar"
+        result: response
+
+    - print-job-id:
+        return: ${response.body.jobUuid}

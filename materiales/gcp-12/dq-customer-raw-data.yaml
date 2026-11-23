@@ -1,0 +1,45 @@
+metadata_registry_defaults:
+  dataplex:
+    projects: western-trilogy-429606-h1
+    locations: us-central1
+    lakes: ecommerce-lake-100
+    zones: customer-contact-raw-zone-01
+row_filters:
+  NONE:
+    filter_sql_expr: |-
+      True
+  INTERNATIONAL_ITEMS:
+    filter_sql_expr: |-
+      REGEXP_CONTAINS(item_id, 'INTNL')
+rule_dimensions:
+  - consistency
+  - correctness
+  - duplication
+  - completeness
+  - conformance
+  - integrity
+  - timeliness
+  - accuracy
+rules:
+  NOT_NULL:
+    rule_type: NOT_NULL
+    dimension: completeness
+  VALID_EMAIL:
+    rule_type: REGEX
+    dimension: conformance
+    params:
+      pattern: |-
+        ^[^@]+[@]{1}[^@]+$
+rule_bindings:
+  VALID_CUSTOMER:
+    entity_uri: bigquery://projects/western-trilogy-429606-h1/datasets/lake/tables/contact_info
+    column_id: id
+    row_filter_id: NONE
+    rule_ids:
+      - NOT_NULL
+  VALID_EMAIL_ID:
+    entity_uri: bigquery://projects/western-trilogy-429606-h1/datasets/lake/tables/contact_info
+    column_id: email
+    row_filter_id: NONE
+    rule_ids:
+      - VALID_EMAIL

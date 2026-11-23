@@ -1,0 +1,40 @@
+main:
+  steps:
+    - ingesta_campanias:
+        call: googleapis.cloudfunctions.v1.projects.locations.functions.call
+        args:
+            name: projects/neural-cosmos-396523/locations/us-central1/functions/function-cwf
+            body:
+                data: '{"source": "cmp"}'
+        result: callResult
+        next: response_campanias
+        
+    - ingesta_transacciones:
+        call: googleapis.cloudfunctions.v1.projects.locations.functions.call
+        args:
+            name: projects/neural-cosmos-396523/locations/us-central1/functions/function-cwf
+            body:
+                data: '{"source": "trx"}'
+        result: callResult
+        next: response_transacciones
+    
+    - ejecutar-job:
+        call: http.post
+        args:
+          url: "https://dataproc.googleapis.com/v1/projects/neural-cosmos-396523/regions/us-central1/jobs:submit"
+          headers:
+            Content-Type: application/json
+            Authorization: ${"Bearer " + access_token}
+          body: 
+            job:
+              placement:
+                clusterName: "ronny-cluster"
+              pysparkJob:
+                mainPythonFileUri: "gs://dev-ronny-raw-bucket-2/scripts/transformaciones_pyspark.py"
+                jarFileUris:
+                  - "gs://dev-ronny-raw-bucket-2/scripts/spark-bigquery-with-dependencies_2.12-0.30.0.jar"
+        result: response
+
+    - print-job-id:
+        return: ${response.body.jobUuid}       
+

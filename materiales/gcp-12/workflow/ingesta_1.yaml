@@ -1,0 +1,13 @@
+main:
+  steps:
+    - ejecutar-cloud-function:
+        call: googleapis.cloudfunctions.v1.projects.locations.functions.call
+        args:
+            name: projects/western-trilogy-429606-h1/locations/us-central1/functions/sd-consola-function-workflow-01
+            body:
+                data: '{"quantity": 50}'
+        result: callResult
+        
+    - response-cloud-function:
+        return: ${callResult}
+

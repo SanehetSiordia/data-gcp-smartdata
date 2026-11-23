@@ -1,0 +1,21 @@
+main:
+  steps:
+    - ingesta_campanias:
+        call: http.get
+        args:
+            url: https://sd-consola-cfunction-wf-02-172614246254.us-central1.run.app
+            query:
+                source: "cmp"
+        next: ingesta_transacciones
+        
+    - ingesta_transacciones:
+        call: http.get
+        args:
+            url: https://sd-consola-cfunction-wf-02-172614246254.us-central1.run.app
+            query:
+                source: "trx"
+        next: fin_ingesta
+
+    - fin_ingesta:
+        return: "Fin de la ingesta"
+

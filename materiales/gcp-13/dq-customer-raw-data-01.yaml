@@ -1,0 +1,45 @@
+metadata_registry_defaults:
+  dataplex:
+    projects: vaulted-timing-447900-g9
+    locations: us-west1
+    lakes: lake-01
+    zones: raw-zone-01
+row_filters:
+  NONE:
+    filter_sql_expr: |-
+      True
+  INTERNATIONAL_ITEMS:
+    filter_sql_expr: |-
+      REGEXP_CONTAINS(item_id, 'INTNL')
+rule_dimensions:
+  - consistency
+  - correctness
+  - duplication
+  - completeness
+  - conformance
+  - integrity
+  - timeliness
+  - accuracy
+rules:
+  NOT_NULL:
+    rule_type: NOT_NULL
+    dimension: completeness
+  VALID_EMAIL:
+    rule_type: REGEX
+    dimension: conformance
+    params:
+      pattern: |-
+        ^[^@]+[@]{1}[^@]+$
+rule_bindings:
+  VALID_CUSTOMER:
+    entity_uri: bigquery://projects/vaulted-timing-447900-g9/datasets/customers_contact_info/tables/contact_info
+    column_id: id
+    row_filter_id: NONE
+    rule_ids:
+      - NOT_NULL
+  VALID_EMAIL_ID:
+    entity_uri: bigquery://projects/vaulted-timing-447900-g9/datasets/customers_contact_info/tables/contact_info
+    column_id: email
+    row_filter_id: NONE
+    rule_ids:
+      - VALID_EMAIL

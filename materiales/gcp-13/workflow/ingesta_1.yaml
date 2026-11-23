@@ -1,0 +1,13 @@
+main:
+  steps:
+    - ejecutar-cloud-function:
+        call: http.get
+        args:
+            url: https://sd-consola-cfunction-g13-01-554394149008.us-central1.run.app
+            query:
+                quantity: 50
+        result: callResult
+        
+    - response-cloud-function:
+        return: ${callResult}
+
